@@ -1,0 +1,31 @@
+services:
+  cpe-simulator:
+    build:
+      context: .
+    image: orbysync-cpe-simulator:latest
+    container_name: orbysync-cpe-simulator
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      TZ: America/Sao_Paulo
+    # Necessário para o ACS alcançar as portas aleatórias de Connection Request.
+    # Use somente no servidor de demonstração dedicado.
+    network_mode: host
+    healthcheck:
+      test: ["CMD", "node", "/app/src/healthcheck.js"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
