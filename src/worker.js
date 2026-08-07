@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const simulator = require('/opt/genieacs-sim/simulator')
+const { installDynamicTelemetry } = require('./telemetry')
 
 const profile = JSON.parse(fs.readFileSync(process.env.PROFILE_PATH, 'utf8'))
 const serial = process.env.SIM_SERIAL
@@ -34,6 +35,8 @@ const tx = 2 + (suffix % 4) * 0.2
 setValue('InternetGatewayDevice.WANDevice.1.X_GponInterfaceConfig.RXPower', String(Math.round(rx * 100)), 'xsd:int')
 setValue('InternetGatewayDevice.WANDevice.1.X_GponInterfaceConfig.TXPower', String(Math.round(tx * 100)), 'xsd:int')
 setValue('InternetGatewayDevice.DeviceInfo.UpTime', String(3600 + suffix * 113), 'xsd:unsignedInt')
+
+installDynamicTelemetry(profile, serial, Number(process.env.TELEMETRY_INTERVAL_MS || 30_000))
 
 console.log(`[${serial}] conectando em ${new URL(acsUrl).origin}`)
 simulator.start(profile, serial, acsUrl)

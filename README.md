@@ -50,6 +50,14 @@ GenieACS informar que a CPE ja esta em sessao, o processo aguarda o timeout do
 ACS antes de tentar novamente; `SESSION_RETRY_DELAY_MS` nao deve ser menor que
 `35000`.
 
+## Telemetria dinamica
+
+Cada CPE varia sinal optico RX/TX, RSSI dos clientes Wi-Fi, temperatura,
+tensao, corrente de bias, uptime, trafego WAN e estado/trafego das portas LAN.
+Uma segunda rede de 5 GHz e criada para exercitar a associacao de clientes por
+radio. O intervalo padrao e de 30 segundos e pode ser alterado com
+`TELEMETRY_INTERVAL_MS`, respeitando o minimo de 5 segundos.
+
 ## Operação
 
 ```bash
