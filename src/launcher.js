@@ -30,6 +30,8 @@ if (!['http:', 'https:'].includes(acs.protocol)) fail('ACS_URL deve usar HTTP ou
 if (!process.env.ACS_USERNAME || !process.env.ACS_PASSWORD) fail('ACS_USERNAME e ACS_PASSWORD sao obrigatorios.')
 
 const interval = Math.max(100, Number(process.env.SPAWN_INTERVAL_MS || 1000))
+const restartDelay = Math.max(10_000, Number(process.env.RESTART_DELAY_MS || 15_000))
+const sessionRetryDelay = Math.max(35_000, Number(process.env.SESSION_RETRY_DELAY_MS || 45_000))
 const children = new Map()
 let spawnIndex = 0
 const heartbeat = '/tmp/orbysync-simulator.heartbeat'
@@ -49,8 +51,11 @@ function spawnDevice(profile, index) {
   child.on('exit', (code, signal) => {
     children.delete(serial)
     if (shuttingDown) return
-    console.error(`[OrbySync Simulator] ${serial} encerrou (${signal || code}); reiniciando em 10s.`)
-    setTimeout(() => spawnDevice(profile, index), 10_000)
+    const baseDelay = code === 75 ? sessionRetryDelay : restartDelay
+    const jitter = (index % 11) * 1_000
+    const delay = baseDelay + jitter
+    console.error(`[OrbySync Simulator] ${serial} encerrou (${signal || code}); reiniciando em ${Math.round(delay / 1000)}s.`)
+    setTimeout(() => spawnDevice(profile, index), delay)
   })
 }
 

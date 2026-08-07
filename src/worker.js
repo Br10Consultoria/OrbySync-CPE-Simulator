@@ -7,6 +7,16 @@ const profile = JSON.parse(fs.readFileSync(process.env.PROFILE_PATH, 'utf8'))
 const serial = process.env.SIM_SERIAL
 const acsUrl = process.env.ACS_URL
 
+process.on('uncaughtException', (error) => {
+  const message = error instanceof Error ? error.message : String(error)
+  if (message.includes('CPE already in session')) {
+    console.error(`[${serial}] sessao anterior ainda bloqueada no ACS; nova tentativa sera feita apos o timeout seguro.`)
+    process.exit(75)
+  }
+  console.error(`[${serial}] erro fatal: ${message}`)
+  process.exit(1)
+})
+
 function setValue(parameter, value, type = 'xsd:string', writable = false) {
   profile[parameter] = [writable, value, type]
 }

@@ -45,6 +45,11 @@ ACS_PASSWORD=preencha_no_servidor
 
 Nunca envie o `.env` ao GitHub.
 
+Para cargas maiores, mantenha `SPAWN_INTERVAL_MS` em pelo menos `1500`. Se o
+GenieACS informar que a CPE ja esta em sessao, o processo aguarda o timeout do
+ACS antes de tentar novamente; `SESSION_RETRY_DELAY_MS` nao deve ser menor que
+`35000`.
+
 ## Operação
 
 ```bash
